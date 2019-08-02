@@ -4,7 +4,14 @@ class ArtistsController < ApplicationController
   end
 
   def show
-    @artist = Artist.find(params[:id])
+    if params[:id].present?
+      if Artist.where(id: params[:id]).empty?
+        flash.alert = "Artist not Found"
+        redirect_to artists_path
+      else
+        @artist = Artist.find(params[:id])
+      end
+    end
   end
 
   def new
@@ -47,6 +54,8 @@ class ArtistsController < ApplicationController
   private
 
   def artist_params
-    params.require(:artist).permit(:name)
+    if !params[:artist][:name].blank?
+      params.require(:artist).permit(:name)
+    end
   end
 end
